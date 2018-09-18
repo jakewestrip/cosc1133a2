@@ -48,6 +48,10 @@ What would you like to do with this led?
 Please enter a number (1-6) for your choice:
 EOM
 
+    #Unsure about brackets after numbers, doesn't fit style of mainMenu()
+    #SANITIZE INPUT, LETTERS SHOULDN'T KILL THE SCRIPT
+    #also handle input better overall
+
     read input
     if [ $input -eq 1 ]
     then
