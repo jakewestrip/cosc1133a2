@@ -61,6 +61,10 @@ EOM
     then
         turnOffLED
     fi
+    if [ $input -eq 3 ]
+    then
+        associateWithSystemEvent
+    fi
     if [ $input -eq 6 ]
     then
         mainMenu
@@ -76,6 +80,44 @@ turnOnLED()
 turnOffLED()
 {
     echo 0 >/sys/class/leds/$ledtomanipulate/brightness
+    manipulateLED
+}
+
+associateWithSystemEvent()
+{
+    clear
+    cat <<EOM
+Associate Led with a system Event
+=================================
+Available events are: 
+---------------------
+EOM
+
+    availableEvents=(`cat /sys/class/leds/$ledtomanipulate/trigger`)
+    eventMenuitems=("${availableEvents[@]}")
+    eventMenuitems+=("Quit to previous menu")
+    eventNum=${#eventMenuitems[@]}
+    eventQuitindex=$eventNum
+
+    for ((i=1; i<=$eventNum; i++))
+    do
+        echo $i: ${eventMenuitems[(($i-1))]}
+    done
+    echo "Please select an option (1-$eventNum):"
+
+    read input
+    if [ $input -eq $eventNum ]
+    then
+        manipulateLED
+    fi
+
+    eventToAssociate=${eventMenuitems[$input-1]}
+    associateWithSystemEventAction
+}
+
+associateWithSystemEventAction()
+{
+    echo $eventToAssociate >/sys/class/leds/$ledtomanipulate/trigger
     manipulateLED
 }
 
