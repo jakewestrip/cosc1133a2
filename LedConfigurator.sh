@@ -237,8 +237,12 @@ EOM
 
     read -r procName
     local procNum
-    procNum=$(ps -axco command | grep -v grep | grep "$procName" | sort -u | wc -l)
+    procNum=$(ps -axco command | grep -v grep | grep -i "$procName" | sort -u | wc -l)
 
+    if [ "$procNum" -eq 1 ]
+    then
+        procName=$(ps -axco command | grep -v grep | grep -i "$procName" | sort -u)
+    fi
     if [ "$procNum" -eq 0 ]
     then
         clear
@@ -264,7 +268,7 @@ chooseProcess()
     clear
 
     local procs=()
-    mapfile -t procs < <(ps -axco command | grep -v grep | grep "$procName" | sort -u)
+    mapfile -t procs < <(ps -axco command | grep -v grep | grep -i "$procName" | sort -u)
     local procMenuitems=("${procs[@]}")
     local procMenuitems+=("Quit to previous menu")
     local procNum=${#procMenuitems[@]}
@@ -305,7 +309,7 @@ EOM
 }
 
 # pickAssociation function
-# Uses globals: ledToManipulate (read), procName (read)
+# Uses globals: backgroundWorkerPath(read), ledToManipulate (read), procName (read)
 # Allows the user to select which process property to associate the selected LED
 #  with, between CPU monitoring and Memory usage monitoring. Kills any currently
 #  running background worker, then spawns a new background worker process, passing
@@ -320,7 +324,7 @@ pickAssociation()
     read -r monitorType
 
     # Check that input is valid, restart function if invalid input
-    if [[ "$monitorType" != "memory" && "$monitorType" != "cpu" && "$monitorType" != "0" && "$monitorType" = "1" ]]
+    if [[ "$monitorType" != "memory" && "$monitorType" != "cpu" && "$monitorType" != "1" && "$monitorType" != "2" ]]
     then
         pickAssociation
         return
@@ -328,13 +332,15 @@ pickAssociation()
 
     killBackgroundProcess
 
-    if [ "$monitorType" == "memory" ]
+    # Use nohup and output redirection to make sure that the process will continue even
+    #  after the current terminal is closed.
+    if [[ "$monitorType" == "memory" || "$monitorType" == "1" ]]
     then
-        "$backgroundWorkerPath" -p "$procName" -t "1" -l "$ledToManipulate" &
+        nohup "$backgroundWorkerPath" -p "$procName" -t "1" -l "$ledToManipulate" &>/dev/null &
     fi
-    if [ "$monitorType" == "cpu" ]
+    if [[ "$monitorType" == "cpu" || "$monitorType" == "2" ]]
     then
-        "$backgroundWorkerPath" -p "$procName" -t "0" -l "$ledToManipulate" &
+        nohup "$backgroundWorkerPath" -p "$procName" -t "0" -l "$ledToManipulate" &>/dev/null &
     fi
 
     manipulateLED

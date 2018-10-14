@@ -76,18 +76,25 @@ while true
 do
     if [ "$monitorType" -eq 0 ]
     then
-        on=$(ps -aux | grep -v grep | grep chromium | awk '{n += $3}; END{print n/100}')
+        on=$(ps -axco pcpu,command | grep -v grep | grep -i "$processName" | awk '{n += $1}; END{print n/100}')
     fi
     if [ "$monitorType" -eq 1 ]
     then
-        on=$(ps -aux | grep -v grep | grep chromium | awk '{n += $4}; END{print n/100}')
+        on=$(ps -axco pmem,command | grep -v grep | grep -i "$processName" | awk '{n += $1}; END{print n/100}')
+    fi
+
+    if [ -z "$on" ]
+    then
+        on="0"
     fi
 
     off=$(echo 1-"$on" | bc) 
 
-    echo 1 >/sys/class/leds/"$attachedLed"/brightness
-
-    sleep "$on"
+    if [ "$on" != "0" ]
+    then
+        echo 1 >/sys/class/leds/"$attachedLed"/brightness
+        sleep "$on"
+    fi
 
     echo 0 >/sys/class/leds/"$attachedLed"/brightness
 
