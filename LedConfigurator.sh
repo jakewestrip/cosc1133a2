@@ -356,6 +356,7 @@ killBackgroundProcess()
     pid=$(ps -ax | grep -v grep | grep BackgroundWorker | awk '{print $1}')
     if [ "$pid" != "" ]
     then
+        disown "$pid"
         kill -s SIGKILL "$pid"
     fi
 }
