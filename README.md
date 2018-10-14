@@ -9,10 +9,12 @@ CONTENTS OF THIS FILE
 
 INTRODUCTION
 ------------
-LedConfigurator is a menu-driven bash script which provides an easy-to-use interface for manipulating system LEDs. Functions include:
+LedConfigurator is a menu-driven bash script which provides an intuitive and easy-to-use interface for manipulating system LEDs. Functions include:
 * Manually turning LEDs on and off
 * Associating LEDs with system events 
 * Associating LEDs with the resource usage of a process via a background worker process
+
+To use the script, simply execute the LedConfigurator.sh file.
 
 REQUIREMENTS
 ------------
@@ -29,11 +31,11 @@ This script relies on the following programs being installed and available on th
 CONFIGURATION
 -------------
 The script has no modifiable settings or configuration.
-As this script manipulates LEDs through the Linux kernel's sysfs, it is necessary to run this script under a superuser account.  
+As this script manipulates LEDs through the Linux kernel's sysfs, it is necessary to run this script under a superuser account. Users should also ensure that both the LedConfigurator.sh and BackgroundWorker.sh files have executable permissions.
 
 FAQ
 -----------
-Q. Does this script pass ShellCheck?
+Q. Does this script pass ShellCheck?  
 A. Yes! In both LedConfigurator.sh and BackgroundWorker.sh the only output from ShellCheck is the info severity message "[SC2009](https://github.com/koalaman/shellcheck/wiki/SC2009): Consider using pgrep instead of grepping ps output."
 
 MAINTAINERS
